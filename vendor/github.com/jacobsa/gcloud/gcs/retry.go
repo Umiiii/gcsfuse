@@ -23,7 +23,10 @@ import (
 	"math"
 	"math/rand"
 	"time"
+	"net"
+	"net/url"
 
+	"google.golang.org/api/googleapi"
 	"golang.org/x/net/context"
 )
 
@@ -50,53 +53,48 @@ func newRetryBucket(
 ////////////////////////////////////////////////////////////////////////
 
 func shouldRetry(err error) (b bool) {
-	log.Printf("Retrying after error of type %T (%q): %#v",
-					err,
-					err.Error(),
-					err)
-	return true
-	// // HTTP 50x errors.
-	// if typed, ok := err.(*googleapi.Error); ok {
-	// 	if typed.Code >= 500 && typed.Code < 600 {
-	// 		b = true
-	// 		return
-	// 	}
-	// }
+	// HTTP 50x errors.
+	if typed, ok := err.(*googleapi.Error); ok {
+		if typed.Code >= 500 && typed.Code < 600 {
+			b = true
+			return
+		}
+	}
 
-	// // HTTP 429 errors (GCS uses these for rate limiting).
-	// if typed, ok := err.(*googleapi.Error); ok {
-	// 	if typed.Code == 429 {
-	// 		b = true
-	// 		return
-	// 	}
-	// }
+	// HTTP 429 errors (GCS uses these for rate limiting).
+	if typed, ok := err.(*googleapi.Error); ok {
+		if typed.Code == 429 {
+			b = true
+			return
+		}
+	}
 
-	// // Network errors, which tend to show up transiently when doing lots of
-	// // operations in parallel. For example:
-	// //
-	// //     dial tcp 74.125.203.95:443: too many open files
-	// //
-	// if _, ok := err.(*net.OpError); ok {
-	// 	b = true
-	// 	return
-	// }
+	// Network errors, which tend to show up transiently when doing lots of
+	// operations in parallel. For example:
+	//
+	//     dial tcp 74.125.203.95:443: too many open files
+	//
+	if _, ok := err.(*net.OpError); ok {
+		b = true
+		return
+	}
 
-	// // The HTTP package returns ErrUnexpectedEOF in several places. This seems to
-	// // come up when the server terminates the connection in the middle of an
-	// // object read.
-	// if err == io.ErrUnexpectedEOF {
-	// 	b = true
-	// 	return
-	// }
+	// The HTTP package returns ErrUnexpectedEOF in several places. This seems to
+	// come up when the server terminates the connection in the middle of an
+	// object read.
+	if err == io.ErrUnexpectedEOF {
+		b = true
+		return
+	}
 
-	// // The HTTP library also appears to leak EOF errors from... somewhere in its
-	// // guts as URL errors sometimes.
-	// if urlErr, ok := err.(*url.Error); ok {
-	// 	if urlErr.Err == io.EOF {
-	// 		b = true
-	// 		return
-	// 	}
-	// }
+	// The HTTP library also appears to leak EOF errors from... somewhere in its
+	// guts as URL errors sometimes.
+	if urlErr, ok := err.(*url.Error); ok {
+	//	if urlErr.Err == io.EOF {
+			b = true
+			return
+	//	}
+	}
 
 	// // Sometimes the HTTP package helpfully encapsulates the real error in a URL
 	// // error.
@@ -105,7 +103,7 @@ func shouldRetry(err error) (b bool) {
 	// 	return
 	// }
 
-	// return
+	return
 }
 
 // Choose an appropriate delay for exponential backoff, given that we have
