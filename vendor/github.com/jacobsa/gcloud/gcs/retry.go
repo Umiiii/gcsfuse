@@ -89,7 +89,7 @@ func shouldRetry(err error) (b bool) {
 
 	// The HTTP library also appears to leak EOF errors from... somewhere in its
 	// guts as URL errors sometimes.
-	if urlErr, ok := err.(*url.Error); ok {
+	if _, ok := err.(*url.Error); ok {
 	//	if urlErr.Err == io.EOF {
 			b = true
 			return
