@@ -24,19 +24,20 @@ import (
 )
 
 func shouldRetry(err error) bool {
-	switch e := err.(type) {
-	case *googleapi.Error:
-		// Retry on 429 and 5xx, according to
-		// https://cloud.google.com/storage/docs/exponential-backoff.
-		return e.Code == 429 || (e.Code >= 500 && e.Code < 600)
-	case *url.Error:
-		// Retry on REFUSED_STREAM.
-		// Unfortunately the error type is unexported, so we resort to string
-		// matching.
-		return strings.Contains(e.Error(), "REFUSED_STREAM")
-	case interface{ Temporary() bool }:
-		return e.Temporary()
-	default:
-		return false
-	}
+	return true
+	// switch e := err.(type) {
+	// case *googleapi.Error:
+	// 	// Retry on 429 and 5xx, according to
+	// 	// https://cloud.google.com/storage/docs/exponential-backoff.
+	// 	return e.Code == 429 || (e.Code >= 500 && e.Code < 600)
+	// case *url.Error:
+	// 	// Retry on REFUSED_STREAM.
+	// 	// Unfortunately the error type is unexported, so we resort to string
+	// 	// matching.
+	// 	return strings.Contains(e.Error(), "REFUSED_STREAM")
+	// case interface{ Temporary() bool }:
+	// 	return e.Temporary()
+	// default:
+	// 	return false
+	// }
 }
