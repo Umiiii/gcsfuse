@@ -16,13 +16,6 @@
 
 package storage
 
-import (
-	"net/url"
-	"strings"
-
-	"google.golang.org/api/googleapi"
-)
-
 func shouldRetry(err error) bool {
 	return true
 	// switch e := err.(type) {

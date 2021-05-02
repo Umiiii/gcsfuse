@@ -22,12 +22,9 @@ import (
 	"log"
 	"math"
 	"math/rand"
-	"net"
-	"net/url"
 	"time"
 
 	"golang.org/x/net/context"
-	"google.golang.org/api/googleapi"
 )
 
 // A bucket that wraps another, calling its methods in a retry loop with
