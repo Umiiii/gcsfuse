@@ -110,6 +110,8 @@ be interacting with the file system.`)
 		FilePerms:              os.FileMode(flags.FileMode),
 		DirPerms:               os.FileMode(flags.DirMode),
 		RenameDirLimit:         flags.RenameDirLimit,
+		FileLimit:              flags.FileLimit,
+		FileOffset:             flags.FileOffset,
 	}
 
 	server, err := fs.NewServer(ctx, serverCfg)

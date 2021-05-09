@@ -775,8 +775,8 @@ func (d *dirInode) ReadObjects(
 	// Collect objects for files or symlinks.
 //	for _, o := range listing.Objects {
     for ; startPtr < len(listing.Objects); startPtr++ {
-    	if count > d.fileLimit {
-    		fmt.Printf("Reaching fileLimit %d, break", d.fileLimit)
+    	if d.fileLimit != 0 && count > d.fileLimit {
+    		fmt.Printf("Reached fileLimit %d, break", d.fileLimit)
     		break
 		}
 

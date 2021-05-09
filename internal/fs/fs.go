@@ -101,6 +101,10 @@ type ServerConfig struct {
 
 	// Allow renaming a directory containing fewer descendants than this limit.
 	RenameDirLimit int64
+
+	// Umi comes here
+	FileLimit  int
+	FileOffset int
 }
 
 // Create a fuse file system server according to the supplied configuration.
@@ -136,6 +140,8 @@ func NewFileSystem(
 		generationBackedInodes: make(map[inode.Name]inode.GenerationBackedInode),
 		implicitDirInodes:      make(map[inode.Name]inode.DirInode),
 		handles:                make(map[fuseops.HandleID]interface{}),
+		fileOffset:             cfg.FileOffset,
+		fileLimit:              cfg.FileLimit,
 	}
 
 	// Set up root bucket
@@ -184,6 +190,8 @@ func makeRootForBucket(
 		syncerBucket,
 		fs.mtimeClock,
 		fs.cacheClock,
+		fs.fileLimit,
+		fs.fileOffset,
 	)
 }
 
@@ -535,7 +543,9 @@ func (fs *fileSystem) mintInode(backer inode.BackObject) (in inode.Inode) {
 			fs.dirTypeCacheTTL,
 			backer.Bucket,
 			fs.mtimeClock,
-			fs.cacheClock)
+			fs.cacheClock,
+			fs.fileLimit,
+			fs.fileOffset)
 
 		// Implicit directories
 	case backer.FullName.IsDir():

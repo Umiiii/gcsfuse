@@ -283,8 +283,8 @@ type flagStorage struct {
 	ImplicitDirs   bool
 	OnlyDir        string
 	RenameDirLimit int64
-	FileOffset     int64
-	FileLimit      int64
+	FileOffset     int
+	FileLimit      int
 
 	// GCS
 	BillingProject                     string
@@ -331,6 +331,10 @@ func populateFlags(c *cli.Context) (flags *flagStorage) {
 		ImplicitDirs:   c.Bool("implicit-dirs"),
 		OnlyDir:        c.String("only-dir"),
 		RenameDirLimit: int64(c.Int("rename-dir-limit")),
+
+		// Umi comes here
+		FileOffset: c.Int("file-offset"),
+		FileLimit:  c.Int("file-limit"),
 
 		// GCS,
 		BillingProject:                     c.String("billing-project"),
