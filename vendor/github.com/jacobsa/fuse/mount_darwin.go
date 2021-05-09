@@ -43,9 +43,9 @@ var (
 	osxfuseInstallations = []osxfuseInstallation{
 		// v3
 		{
-			DevicePrefix: "/dev/osxfuse",
-			Load:         "/Library/Filesystems/osxfuse.fs/Contents/Resources/load_osxfuse",
-			Mount:        "/Library/Filesystems/osxfuse.fs/Contents/Resources/mount_osxfuse",
+			DevicePrefix: "/dev/macfuse",
+			Load:         "/Library/Filesystems/macfuse.fs/Contents/Resources/load_macfuse",
+			Mount:        "/Library/Filesystems/macfuse.fs/Contents/Resources/mount_macfuse",
 			DaemonVar:    "MOUNT_OSXFUSE_DAEMON_PATH",
 		},
 

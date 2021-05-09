@@ -117,6 +117,18 @@ func newApp() (app *cli.App) {
 					"than this limit.",
 			},
 
+			cli.IntFlag{
+				Name:  "file-limit",
+				Value: 0,
+				Usage: "File limit",
+			},
+
+			cli.IntFlag{
+				Name:  "file-offset",
+				Value: 0,
+				Usage: "File offset",
+			},
+
 			/////////////////////////
 			// GCS
 			/////////////////////////
