@@ -149,6 +149,12 @@ type BucketOwnedDirInode interface {
 
 type dirInode struct {
 	/////////////////////////
+	// Umi comes here
+	/////////////////////////
+	fileLimit  int64
+	fileOffset int64
+
+	/////////////////////////
 	// Dependencies
 	/////////////////////////
 
@@ -214,7 +220,9 @@ func NewDirInode(
 	typeCacheTTL time.Duration,
 	bucket gcsx.SyncerBucket,
 	mtimeClock timeutil.Clock,
-	cacheClock timeutil.Clock) (d DirInode) {
+	cacheClock timeutil.Clock,
+	fileLimit int64,
+	fileOffset int64) (d DirInode) {
 
 	if !name.IsDir() {
 		panic(fmt.Sprintf("Unexpected name: %s", name))
@@ -231,6 +239,8 @@ func NewDirInode(
 		name:         name,
 		attrs:        attrs,
 		cache:        newTypeCache(typeCacheCapacity/2, typeCacheTTL),
+		fileLimit:    fileLimit,
+		fileOffset:   fileOffset,
 	}
 
 	typed.lc.Init(id)

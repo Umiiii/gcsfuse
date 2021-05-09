@@ -235,6 +235,12 @@ type fileSystem struct {
 	fuseutil.NotImplementedFileSystem
 
 	/////////////////////////
+	// Umi comes here
+	/////////////////////////
+	fileLimit  int64
+	fileOffset int64
+
+	/////////////////////////
 	// Dependencies
 	/////////////////////////
 
@@ -550,7 +556,9 @@ func (fs *fileSystem) mintInode(backer inode.BackObject) (in inode.Inode) {
 			fs.dirTypeCacheTTL,
 			backer.Bucket,
 			fs.mtimeClock,
-			fs.cacheClock)
+			fs.cacheClock,
+			fs.fileLimit,
+			fs.fileOffset)
 
 	case inode.IsSymlink(backer.Object):
 		in = inode.NewSymlinkInode(
@@ -1587,7 +1595,7 @@ func (fs *fileSystem) Unlink(
 	err = parent.DeleteChildFile(
 		ctx,
 		op.Name,
-		0,   // Latest generation
+		0, // Latest generation
 		nil) // No meta-generation precondition
 
 	if err != nil {
