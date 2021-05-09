@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b1c1e01-0f4a-47dd-b3c4-c3a5d9284eb8" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/fs/fs.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/fs/fs.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/fs/inode/dir.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/fs/inode/dir.go" afterDir="false" />
     </list>

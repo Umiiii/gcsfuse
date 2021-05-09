@@ -151,8 +151,8 @@ type dirInode struct {
 	/////////////////////////
 	// Umi comes here
 	/////////////////////////
-	fileLimit  int64
-	fileOffset int64
+	fileLimit  int
+	fileOffset int
 
 	/////////////////////////
 	// Dependencies
@@ -221,8 +221,8 @@ func NewDirInode(
 	bucket gcsx.SyncerBucket,
 	mtimeClock timeutil.Clock,
 	cacheClock timeutil.Clock,
-	fileLimit int64,
-	fileOffset int64) (d DirInode) {
+	fileLimit int,
+	fileOffset int) (d DirInode) {
 
 	if !name.IsDir() {
 		panic(fmt.Sprintf("Unexpected name: %s", name))
@@ -752,6 +752,8 @@ func (d *dirInode) ReadObjects(
 	ctx context.Context,
 	tok string) (files []BackObject, dirs []BackObject, newTok string, err error) {
 	// Ask the bucket to list some objects.
+
+	// Umi comes here
 	req := &gcs.ListObjectsRequest{
 		Delimiter:         "/",
 		Prefix:            d.Name().GcsObjectName(),
@@ -759,14 +761,27 @@ func (d *dirInode) ReadObjects(
 	}
 
 	listing, err := d.bucket.ListObjects(ctx, req)
+	fmt.Printf("ListObjects: %d files", len(listing.Objects))
 	if err != nil {
 		err = fmt.Errorf("ListObjects: %w", err)
 		return
 	}
 	now := d.cacheClock.Now()
-
+	startPtr := 0
+	count := 0
+	if d.fileOffset != 0 && len(listing.Objects) > d.fileOffset{
+		startPtr = d.fileOffset
+	}
 	// Collect objects for files or symlinks.
-	for _, o := range listing.Objects {
+//	for _, o := range listing.Objects {
+    for ; startPtr < len(listing.Objects); startPtr++ {
+    	if count > d.fileLimit {
+    		fmt.Printf("Reaching fileLimit %d, break", d.fileLimit)
+    		break
+		}
+
+		count = count + 1
+		o := listing.Objects[startPtr]
 		// Skip the dir object itself, which of course has its
 		// own name as a prefix but which we don't wan to appear to contain itself.
 		if o.Name == d.Name().GcsObjectName() {

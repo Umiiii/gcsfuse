@@ -237,8 +237,8 @@ type fileSystem struct {
 	/////////////////////////
 	// Umi comes here
 	/////////////////////////
-	fileLimit  int64
-	fileOffset int64
+	fileLimit  int
+	fileOffset int
 
 	/////////////////////////
 	// Dependencies
