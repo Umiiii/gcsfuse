@@ -34,6 +34,8 @@ type dirHandle struct {
 
 	in           inode.DirInode
 	implicitDirs bool
+	fileLimit    int
+	fileOffset   int
 
 	/////////////////////////
 	// Mutable state
@@ -59,11 +61,15 @@ type dirHandle struct {
 // Create a directory handle that obtains listings from the supplied inode.
 func newDirHandle(
 	in inode.DirInode,
-	implicitDirs bool) (dh *dirHandle) {
+	implicitDirs bool,
+	fileLimit int,
+	fileOffset int) (dh *dirHandle) {
 	// Set up the basic struct.
 	dh = &dirHandle{
 		in:           in,
 		implicitDirs: implicitDirs,
+		fileLimit:    fileLimit,
+		fileOffset:   fileOffset,
 	}
 
 	// Set up invariant checking.
@@ -160,7 +166,9 @@ func fixConflictingNames(entries []fuseutil.Dirent) (err error) {
 // LOCKS_REQUIRED(in)
 func readAllEntries(
 	ctx context.Context,
-	in inode.DirInode) (entries []fuseutil.Dirent, err error) {
+	in inode.DirInode,
+	fileLimit int,
+	fileOffset int) (entries []fuseutil.Dirent, err error) {
 	// Read one batch at a time.
 	var tok string
 	for {
@@ -177,6 +185,7 @@ func readAllEntries(
 		entries = append(entries, batch...)
 
 		// Are we done?
+
 		if tok == "" {
 			break
 		}
@@ -186,6 +195,13 @@ func readAllEntries(
 	// below.
 	sort.Sort(sortedDirents(entries))
 
+	if fileLimit != 0 && len(entries) > fileLimit {
+		if fileLimit+fileOffset > len(entries) {
+			entries = entries[fileOffset:]
+		} else {
+			entries = entries[fileOffset:(fileOffset + fileLimit)]
+		}
+	}
 	// Fix name conflicts.
 	err = fixConflictingNames(entries)
 	if err != nil {
@@ -226,7 +242,7 @@ func (dh *dirHandle) ensureEntries(ctx context.Context) (err error) {
 
 	// Read entries.
 	var entries []fuseutil.Dirent
-	entries, err = readAllEntries(ctx, dh.in)
+	entries, err = readAllEntries(ctx, dh.in, dh.fileLimit, dh.fileOffset)
 	if err != nil {
 		err = fmt.Errorf("readAllEntries: %w", err)
 		return

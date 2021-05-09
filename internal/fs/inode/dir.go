@@ -753,7 +753,6 @@ func (d *dirInode) ReadObjects(
 	tok string) (files []BackObject, dirs []BackObject, newTok string, err error) {
 	// Ask the bucket to list some objects.
 
-	// Umi comes here
 	req := &gcs.ListObjectsRequest{
 		Delimiter:         "/",
 		Prefix:            d.Name().GcsObjectName(),
@@ -761,27 +760,13 @@ func (d *dirInode) ReadObjects(
 	}
 
 	listing, err := d.bucket.ListObjects(ctx, req)
-	fmt.Printf("ListObjects: %d files", len(listing.Objects))
 	if err != nil {
 		err = fmt.Errorf("ListObjects: %w", err)
 		return
 	}
 	now := d.cacheClock.Now()
-	startPtr := 0
-	count := 0
-	if d.fileOffset != 0 && len(listing.Objects) > d.fileOffset{
-		startPtr = d.fileOffset
-	}
 	// Collect objects for files or symlinks.
-//	for _, o := range listing.Objects {
-    for ; startPtr < len(listing.Objects); startPtr++ {
-    	if d.fileLimit != 0 && count > d.fileLimit {
-    		fmt.Printf("Reached fileLimit %d, break", d.fileLimit)
-    		break
-		}
-
-		count = count + 1
-		o := listing.Objects[startPtr]
+	for _, o := range listing.Objects {
 		// Skip the dir object itself, which of course has its
 		// own name as a prefix but which we don't wan to appear to contain itself.
 		if o.Name == d.Name().GcsObjectName() {

@@ -1632,7 +1632,7 @@ func (fs *fileSystem) OpenDir(
 	handleID := fs.nextHandleID
 	fs.nextHandleID++
 
-	fs.handles[handleID] = newDirHandle(in, fs.implicitDirs)
+	fs.handles[handleID] = newDirHandle(in, fs.implicitDirs, fs.fileLimit, fs.fileOffset)
 	op.Handle = handleID
 
 	return
