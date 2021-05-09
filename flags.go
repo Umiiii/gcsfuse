@@ -283,6 +283,8 @@ type flagStorage struct {
 	ImplicitDirs   bool
 	OnlyDir        string
 	RenameDirLimit int64
+	FileOffset     int64
+	FileLimit      int64
 
 	// GCS
 	BillingProject                     string
