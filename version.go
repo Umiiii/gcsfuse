@@ -26,7 +26,7 @@ var gcsfuseVersion string
 func getVersion() string {
 	v := gcsfuseVersion
 	if v == "" {
-		v = "unknown"
+		v = "umi 0.1"
 	}
 
 	return fmt.Sprintf("%s (Go version %s)", v, runtime.Version())
